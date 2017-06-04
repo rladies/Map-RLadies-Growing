@@ -1,4 +1,4 @@
-# RLadies is growing FAST!
+# R-Ladies is growing FAST!
 
 Here is the code to make this animated map:
 
