@@ -1,5 +1,7 @@
 # R-Ladies is growing FAST!
 
+(to cite, use my twitter handle: @d4tagirl, thanks!)
+
 Here is the code to make this animated map:
 
 ![alt tag](https://github.com/rladies/Map-RLadies-Growing/raw/master/rladies_growth.gif)
