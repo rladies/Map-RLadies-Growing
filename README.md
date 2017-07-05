@@ -1,6 +1,6 @@
 # R-Ladies is growing FAST!
 
-(to cite, use my twitter handle: @d4tagirl, thanks!)
+(to cite, use the twitter handle: @d4tagirl, thanks!)
 
 Here is the code to make this animated map:
 
