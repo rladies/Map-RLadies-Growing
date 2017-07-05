@@ -1,3 +1,5 @@
+# To cite please use the Twitter handle @d4tagirl, thanks!
+
 library(rtweet)
 library(dplyr)
 library(lubridate)
