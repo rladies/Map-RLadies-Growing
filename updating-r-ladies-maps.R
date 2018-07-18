@@ -9,6 +9,7 @@ library(purrr)
 library(ggthemes)
 library(maps)
 library(plotly)
+# I'm using this version of gganimate: https://github.com/thomasp85/gganimate/releases/tag/v0.1.1
 library(gganimate)
 library(tibble)
 library(stringr)
@@ -61,6 +62,7 @@ rladies_withloc <- rladies_withloc %>%
 rladies <- rladies_withloc
 rladies_withloc <- NULL
 # saveRDS(rladies, "20180718_rladies_withloc")
+# rladies <- readRDS("20180718_rladies_withloc")
 
 #··················
 # plotly
@@ -90,10 +92,13 @@ map <- world +
              colour = 'purple', alpha = .5) +
   scale_size_continuous(range = c(1, 8), 
                         breaks = c(250, 500, 750, 1000)) +
-  labs(size = 'Followers')
+  labs(size = 'Followers') +
+  annotate("text", x = 0, y = -80, 
+           color = "purple",
+           label = "Made with love by R-Ladies")
 
 #··············
-# gganimate map 
+# gganimate map
 
 # init point to show empty map in the beggining
 ghost_point <- rladies %>%
@@ -138,7 +143,10 @@ map_less_frames <- world +
                  frame = date),
              data = ghost_point, alpha = 0) +
   scale_size_continuous(range = c(1, 10), breaks = c(250, 500, 750, 1000)) +
-  labs(size = 'Followers')
+  labs(size = 'Followers') +
+  annotate("text", x = 0, y = -80, 
+           color = "purple",
+           label = "Made with love by R-Ladies")
 
 # animation::ani.options(ani.width = 1125, ani.height = 675)
 animation::ani.options(ani.width = 800, ani.height = 480)
