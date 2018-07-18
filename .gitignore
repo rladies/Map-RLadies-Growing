@@ -1,3 +1,7 @@
 .idea/
 env/
 *.csv
+.Rproj.user
+*.Rproj
+.Rhistory
+20180718_rladies_withloc

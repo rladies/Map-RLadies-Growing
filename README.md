@@ -13,3 +13,5 @@ A static map:
 ![alt tag](https://github.com/rladies/Map-RLadies-Growing/raw/master/static.png)
 
 And there is also the code to make a Plotly one.
+
+Note: last updated on July the 18th, 2018.
