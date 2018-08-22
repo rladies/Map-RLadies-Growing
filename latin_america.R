@@ -64,36 +64,26 @@ rladies_withloc <- NULL
 # saveRDS(rladies, "20180718_rladies_withloc")
 # rladies <- readRDS("20180718_rladies_withloc")
 
-#··················
-# plotly
-
-world <- ggplot() +
-  borders("world", colour = "gray85", fill = "gray80") +
-  theme_map()
-
-map <- world +
-  geom_point(aes(x = lon, y = lat,
-                 text = paste('city: ', location,
-                              '<br /> created : ', created_at),
-                 size = followers),
-             data = rladies, colour = 'purple', alpha = .5) +
-  scale_size_continuous(range = c(1, 9), breaks = c(250, 500, 750, 1000)) +
-  labs(size = 'Followers')
-
-ggplotly(map, tooltip = c('text', 'size'))
-
 #··············
 # static map 
 
-map <- world +
+continent <- borders("world", regions = c("Brazil", "Uruguay", "Argentina", "French Guiana", "Suriname", "Colombia", "Venezuela", "Bolivia", "Ecuador", "Chile", "Paraguay", "Peru", "Guyana", "Panama", "Costa Rica", "Nicaragua", "Honduras", "El Salvador", "Belize", "Guatemala", "Mexico", "Trinidad and Tobago", "Caribe", "Puerto Rico", "Dominican Republic", "Haiti", "Jamaica", "Cuba", "Bahamas", "Antiles", "Dominica", "Saba"),
+                     colour = "gray85", fill = "gray80")
+
+latin_america <- ggplot() + 
+  continent + 
+  theme_map()
+
+map <- latin_america +
   geom_point(aes(x = lon, y = lat,
                  size = followers),    # add the size aes for later gganimate
-             data = rladies, 
+             data = rladies %>% filter(lat > -59.870 & lat < 25,
+                                       lon > -122.190 & lon < -25.280), 
              colour = 'purple', alpha = .5) +
   scale_size_continuous(range = c(1, 8), 
                         breaks = c(250, 500, 750, 1000)) +
   labs(size = 'Followers') +
-  annotate("text", x = 0, y = -80, 
+  annotate("text", x = 0, y = -80, hjust = 1, 
            color = "purple",
            label = "Made with love by R-Ladies")
 
@@ -133,21 +123,21 @@ rladies_less_frames <- rladies_frames %>%
   filter((day(as.Date(date)) == 1 & month(as.Date(date)) %% 6 == 0) |
            as.Date(date) >= rladies$created_at[rladies$screen_name == 'RLadiesLondon'])
 
-map_less_frames <- world +
+map_less_frames <- latin_america +
   geom_point(aes(x = lon, y = lat,
                  size = est_followers,
                  frame = date),
-             data = rladies_less_frames, colour = 'purple', alpha = .5) +
+             data = rladies_less_frames %>% filter(lat > -59.870 & lat < 25,
+                                                   lon > -122.190 & lon < -25.280), 
+             colour = 'purple', alpha = .5) +
   geom_point(aes(x = lon, y = lat,
                  size = est_followers,
                  frame = date),
              data = ghost_point, alpha = 0) +
   scale_size_continuous(range = c(1, 10), breaks = c(250, 500, 750, 1000)) +
-  labs(size = 'Followers') + 
-  labs(size = 'Seguidores') + 
-  annotate("text", x = 00, y = -80, 
+  labs(size = 'Seguidores') +
+  annotate("text", x = -65, y = -70, 
            color = "purple",
-           # label = "Made with <3 by R-Ladies (code: dv.uy/mapas-rladies)", 
            label = "Hecho con <3 por R-Ladies (código: dv.uy/mapas-rladies)", 
            size = 5) +
   theme(legend.text=element_text(size=12),
@@ -156,5 +146,5 @@ map_less_frames <- world +
         plot.title=element_text(size=14, hjust = 0.05, vjust=-0.12))
 
 # animation::ani.options(ani.width = 1125, ani.height = 675)
-animation::ani.options(ani.width = 800, ani.height = 480)
-gganimate(map_less_frames, interval = .15, "rladies_growth.gif")
+animation::ani.options(ani.width = 450, ani.height = 480)
+gganimate(map_less_frames, interval = .15, "rladies_growth_latam.gif")
