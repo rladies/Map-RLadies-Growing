@@ -19,8 +19,12 @@ users <- lists_members(slug = "rladies-chapters", owner_user = "gdequeiroz", n =
 
 # Lookup table to replace the cities Google Maps can't match
 # (if you find more, please add them!)
-lookup <- tibble(screen_name = c('RLadiesLx', 'RLadiesNatal', 'RLadiesLinz'),
-                 location = c('Lisbon', 'Natal, Brazil', 'Linz, Austria'))
+lookup <- tibble(screen_name = c('RLadiesLx', 'RLadiesNatal', 'RLadiesLinz',
+                                 'rladiestoronto', 'RLadiesXalapa',
+                                 'RLadiesRemote'),
+                 location = c('Lisbon', 'Natal, Brazil', 'Linz, Austria',
+                              'Toronto, Canada', 'Xalapa, Mexico',
+                              'Tristan da Cunha'))
 
 rladies <- unique(users) %>%
   filter(!screen_name %in% c('RLadiesGlobal')) %>%
@@ -38,31 +42,11 @@ rladies <- unique(users) %>%
   left_join(lookup, by = 'screen_name') %>%
   mutate(location = ifelse(is.na(location.y), location.x, location.y)) %>%
   select(screen_name, location, created_at, followers = followers_count, age_days) %>%
-  mutate(longlat = purrr::map(.$location, geocode)) %>%
+  mutate(longlat = purrr::map(.$location, geocode, source = "dsk")) %>%
   unnest()
 
-# I'm having problems with QUERY LIMITS, so I have to do this think that I don't like...
-rladies_withloc <- rladies %>% 
-  filter(!is.na(lon))
-
-# repeat this until there are no warnings() about QUERY LIMITS
-temp <- rladies %>% 
-  select(-lon, -lat) %>% 
-  anti_join(rladies_withloc %>% select(-lon, -lat)) %>% 
-  mutate(longlat = purrr::map(.$location, geocode)) %>% 
-  unnest() %>% 
-  filter(!is.na(lon))
-
-rladies_withloc <- rladies_withloc %>% 
-  bind_rows(temp) %>% 
-  distinct()
-
-# End of repetition
-
-rladies <- rladies_withloc
-rladies_withloc <- NULL
-# saveRDS(rladies, "20180718_rladies_withloc")
-# rladies <- readRDS("20180718_rladies_withloc")
+# saveRDS(rladies, "2018-12-11_rladies.rds")
+# rladies <- readRDS("2018-12-11_rladies.rds")
 
 #··················
 # plotly
@@ -73,7 +57,9 @@ world <- ggplot() +
 
 map <- world +
   geom_point(aes(x = lon, y = lat,
-                 text = paste('city: ', location,
+                 text = paste('city: ', ifelse(screen_name == 'RLadiesRemote',
+                                               'Remote (Worldwide)',
+                                               location),
                               '<br /> created : ', created_at),
                  size = followers),
              data = rladies, colour = 'purple', alpha = .5) +
@@ -83,19 +69,20 @@ map <- world +
 ggplotly(map, tooltip = c('text', 'size'))
 
 #··············
-# static map 
+# static map
 
 map <- world +
   geom_point(aes(x = lon, y = lat,
                  size = followers),    # add the size aes for later gganimate
-             data = rladies, 
+             data = rladies,
              colour = 'purple', alpha = .5) +
-  scale_size_continuous(range = c(1, 8), 
+  scale_size_continuous(range = c(1, 8),
                         breaks = c(250, 500, 750, 1000)) +
   labs(size = 'Followers') +
-  annotate("text", x = 0, y = -80, 
+  annotate("text", x = 0, y = -80,
            color = "purple",
            label = "Made with love by R-Ladies")
+ggsave("static2.png", width = 12, height = 7)
 
 #··············
 # gganimate map
@@ -108,11 +95,11 @@ ghost_point <- rladies %>%
     lon = 0,
     lat = 0,
     .before = 1) %>%
-  slice(1) %>% 
+  slice(1) %>%
   mutate(date = format(created_at, format = '%Y-%m-%d'),
          est_followers = 0)
 
-dates <- as_tibble(seq(floor_date(as.Date(min(rladies$created_at)), 
+dates <- as_tibble(seq(floor_date(as.Date(min(rladies$created_at)),
                                   unit = "month"),
                        today(),
                        by = 'days')) %>%
@@ -143,12 +130,12 @@ map_less_frames <- world +
                  frame = date),
              data = ghost_point, alpha = 0) +
   scale_size_continuous(range = c(1, 10), breaks = c(250, 500, 750, 1000)) +
-  labs(size = 'Followers') + 
-  labs(size = 'Seguidores') + 
-  annotate("text", x = 00, y = -80, 
+  labs(size = 'Followers') +
+  labs(size = 'Seguidores') +
+  annotate("text", x = 00, y = -80,
            color = "purple",
-           # label = "Made with <3 by R-Ladies (code: dv.uy/mapas-rladies)", 
-           label = "Hecho con <3 por R-Ladies (código: dv.uy/mapas-rladies)", 
+           # label = "Made with <3 by R-Ladies (code: dv.uy/mapas-rladies)",
+           label = "Hecho con <3 por R-Ladies (código: dv.uy/mapas-rladies)",
            size = 5) +
   theme(legend.text=element_text(size=12),
         legend.title=element_text(size=14),
