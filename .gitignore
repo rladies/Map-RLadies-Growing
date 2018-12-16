@@ -5,3 +5,4 @@ env/
 *.Rproj
 .Rhistory
 20180718_rladies_withloc
+*.rds
