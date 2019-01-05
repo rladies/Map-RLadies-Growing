@@ -1,6 +1,12 @@
 # R-Ladies is growing FAST!
 
-(to cite, use the twitter handle: @d4tagirl, thanks!)
+(to cite, use the twitter handle: [\@d4tagirl](https://twitter.com/d4tagirl), thanks!)
+
+___
+
+This map was built using [`gganimate` v0.1.1](https://github.com/thomasp85/gganimate/releases/tag/v0.1.1). It breaks with the latest version.
+
+___
 
 Here is the code to make this animated map:
 
